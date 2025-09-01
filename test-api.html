@@ -15,13 +15,11 @@
 </head>
 <body>
   <h1>AI4SAT Tutor API Test</h1>
-  <!--
   <div class="row">
     <label>API Base URL:</label><br>
     <input id="api" size="60" value="https://ai4sat-tutor-api-jkle.vercel.app">
     <div style="font-size:.9rem;color:#555">Replace with your actual Vercel URL or custom domain (e.g., https://api.ai4academics.org)</div>
   </div>
-  -->
 
   <div class="row">
     <label>Question:</label><br>
@@ -30,7 +28,7 @@
 
   <div class="row">
     <label>Answer:</label><br>
-    <input id="answer" value="" size="20">
+    <input id="answer" value="32615" size="20">
   </div>
 
   <button onclick="send()">Check Answer</button>
@@ -47,6 +45,14 @@
       const output = document.getElementById('output');
       const feedback = document.getElementById('feedback');
 
+      console.log('[v0] Starting API call...');
+      console.log('[v0] API URL:', api + "/api/check-answer");
+      console.log('[v0] Request data:', { question, answer });
+      
+      // Clear previous results
+      feedback.innerHTML = '';
+      output.textContent = 'Making request...';
+
       try {
         const resp = await fetch(api + "/api/check-answer", {
           method: "POST",
@@ -54,7 +60,12 @@
           body: JSON.stringify({ question, answer })
         });
 
+        console.log('[v0] Response received:', resp.status, resp.statusText);
+        console.log('[v0] Response headers:', Object.fromEntries(resp.headers.entries()));
+
         const text = await resp.text();
+        console.log('[v0] Response text:', text);
+        
         let body;
         try { body = JSON.parse(text); } catch { body = text; }
 
@@ -77,14 +88,13 @@
           feedback.textContent = 'API Error: ' + (body.error || 'Unknown error');
         }
 
-        /*
         output.textContent =
           "Status: " + resp.status + " " + resp.statusText + "\n" +
           "URL: " + resp.url + "\n" +
           "Headers: " + JSON.stringify(Object.fromEntries(resp.headers.entries()), null, 2) + "\n\n" +
           "Body:\n" + (typeof body === "string" ? body : JSON.stringify(body, null, 2));
-        */
       } catch (err) {
+        console.log('[v0] Fetch error:', err);
         feedback.className = 'error';
         feedback.textContent = "Connection Error: " + err.message;
         output.textContent = "Fetch error: " + err.message +
