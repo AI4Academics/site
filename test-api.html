@@ -9,6 +9,8 @@
     #output { white-space: pre-wrap; background: #f8f8f8; padding: 1rem; border-radius: 8px; margin-top: 1rem; }
     .row{margin-bottom:1rem}
     label{font-weight:600}
+    .success { background: #d4edda; color: #155724; padding: 1rem; border-radius: 8px; margin-top: 1rem; }
+    .error { background: #f8d7da; color: #721c24; padding: 1rem; border-radius: 8px; margin-top: 1rem; }
   </style>
 </head>
 <body>
@@ -21,18 +23,19 @@
 
   <div class="row">
     <label>Question:</label><br>
-    <input id="question" value="6523 × 5 = " size="40">
+    <input id="question" value="6523 × 5 = ?" size="40">
   </div>
 
   <div class="row">
     <label>Answer:</label><br>
-    <input id="answer" value="?" size="20">
+    <input id="answer" value="32615" size="20">
   </div>
 
-  <button onclick="send()">Check</button>
+  <button onclick="send()">Check Answer</button>
 
   <h3>Response:</h3>
   <div id="output">(results will appear here)</div>
+  <div id="feedback"></div>
 
   <script>
     async function send() {
@@ -40,6 +43,7 @@
       const question = document.getElementById('question').value;
       const answer = document.getElementById('answer').value;
       const output = document.getElementById('output');
+      const feedback = document.getElementById('feedback');
 
       try {
         const resp = await fetch(api + "/api/check-answer", {
@@ -52,16 +56,43 @@
         let body;
         try { body = JSON.parse(text); } catch { body = text; }
 
+        if (resp.ok && typeof body === 'object' && body.correct !== undefined) {
+          feedback.className = body.correct ? 'success' : 'error';
+          feedback.innerHTML = `
+            <strong>${body.correct ? '✅ Correct!' : '❌ Incorrect'}</strong><br>
+            ${body.feedback}<br>
+            ${body.nextQuestion ? `<strong>Next Question:</strong> ${body.nextQuestion.question}` : ''}
+          `;
+          
+          // Auto-populate next question if available
+          if (body.nextQuestion) {
+            document.getElementById('question').value = body.nextQuestion.question;
+            document.getElementById('answer').value = '';
+            document.getElementById('answer').focus();
+          }
+        } else {
+          feedback.className = 'error';
+          feedback.textContent = 'API Error: ' + (body.error || 'Unknown error');
+        }
+
         output.textContent =
           "Status: " + resp.status + " " + resp.statusText + "\n" +
           "URL: " + resp.url + "\n" +
           "Headers: " + JSON.stringify(Object.fromEntries(resp.headers.entries()), null, 2) + "\n\n" +
           "Body:\n" + (typeof body === "string" ? body : JSON.stringify(body, null, 2));
       } catch (err) {
+        feedback.className = 'error';
+        feedback.textContent = "Connection Error: " + err.message;
         output.textContent = "Fetch error: " + err.message +
           "\n(Hint: If this is a CORS preflight issue, ensure the API sends Access-Control-Allow-* headers and that ALLOWED_ORIGIN matches this page's origin.)";
       }
     }
+
+    document.getElementById('answer').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        send();
+      }
+    });
   </script>
 </body>
 </html>
