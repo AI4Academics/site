@@ -4,20 +4,30 @@
   <meta charset="UTF-8" />
   <title>AI4SAT Tutor API Test</title>
   <style>
-    body { font-family: sans-serif; padding: 2rem; }
-    input, button { padding: 0.5rem; font-size: 1rem; margin: 0.25rem 0; }
-    #output { white-space: pre; background: #f8f8f8; padding: 1rem; border-radius: 8px; margin-top: 1rem; }
+    body { font-family: system-ui, sans-serif; padding: 2rem; max-width: 820px; margin: auto; }
+    input, button { padding: .5rem; font-size: 1rem; margin: .25rem 0; }
+    #output { white-space: pre-wrap; background: #f8f8f8; padding: 1rem; border-radius: 8px; margin-top: 1rem; }
+    .row{margin-bottom:1rem}
+    label{font-weight:600}
   </style>
 </head>
 <body>
   <h1>AI4SAT Tutor API Test</h1>
-  <p>Try sending a multiplication question to the <code>/api/check-answer</code> endpoint.</p>
+  <div class="row">
+    <label>API Base URL:</label><br>
+    <input id="api" size="60" value="https://ai4sat-tutor-api-jkle.vercel.app">
+    <div style="font-size:.9rem;color:#555">Replace with your actual Vercel URL or custom domain (e.g., https://api.ai4academics.org)</div>
+  </div>
 
-  <label>Question:</label><br>
-  <input id="question" value="6523 × 5 = ?" size="40"><br>
+  <div class="row">
+    <label>Question:</label><br>
+    <input id="question" value="6523 × 5 = ?" size="40">
+  </div>
 
-  <label>Answer:</label><br>
-  <input id="answer" value="32615" size="20"><br>
+  <div class="row">
+    <label>Answer:</label><br>
+    <input id="answer" value="32615" size="20">
+  </div>
 
   <button onclick="send()">Check</button>
 
@@ -26,20 +36,30 @@
 
   <script>
     async function send() {
+      const api = document.getElementById('api').value.replace(/\/$/, '');
       const question = document.getElementById('question').value;
       const answer = document.getElementById('answer').value;
       const output = document.getElementById('output');
 
       try {
-        const resp = await fetch("https://ai4sat-tutor-api-jkle.vercel.app/api/check-answer", {
+        const resp = await fetch(api + "/api/check-answer", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ question, answer })
         });
-        const data = await resp.json();
-        output.textContent = JSON.stringify(data, null, 2);
+
+        const text = await resp.text();
+        let body;
+        try { body = JSON.parse(text); } catch { body = text; }
+
+        output.textContent =
+          "Status: " + resp.status + " " + resp.statusText + "\n" +
+          "URL: " + resp.url + "\n" +
+          "Headers: " + JSON.stringify(Object.fromEntries(resp.headers.entries()), null, 2) + "\n\n" +
+          "Body:\n" + (typeof body === "string" ? body : JSON.stringify(body, null, 2));
       } catch (err) {
-        output.textContent = "Error: " + err.message;
+        output.textContent = "Fetch error: " + err.message +
+          "\n(Hint: If this is a CORS preflight issue, ensure the API sends Access-Control-Allow-* headers and that ALLOWED_ORIGIN matches this page's origin.)";
       }
     }
   </script>
