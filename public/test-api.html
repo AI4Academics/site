@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AI4SAT Tutor API Test</title>
+  <style>
+    body { font-family: sans-serif; padding: 2rem; }
+    input, button { padding: 0.5rem; font-size: 1rem; margin: 0.25rem 0; }
+    #output { white-space: pre; background: #f8f8f8; padding: 1rem; border-radius: 8px; margin-top: 1rem; }
+  </style>
+</head>
+<body>
+  <h1>AI4SAT Tutor API Test</h1>
+  <p>Try sending a multiplication question to the <code>/api/check-answer</code> endpoint.</p>
+
+  <label>Question:</label><br>
+  <input id="question" value="6523 × 5 = ?" size="40"><br>
+
+  <label>Answer:</label><br>
+  <input id="answer" value="32615" size="20"><br>
+
+  <button onclick="send()">Check</button>
+
+  <h3>Response:</h3>
+  <div id="output">(results will appear here)</div>
+
+  <script>
+    async function send() {
+      const question = document.getElementById('question').value;
+      const answer = document.getElementById('answer').value;
+      const output = document.getElementById('output');
+
+      try {
+        const resp = await fetch("https://ai4sat-tutor-api-jkle.vercel.app/api/check-answer", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ question, answer })
+        });
+        const data = await resp.json();
+        output.textContent = JSON.stringify(data, null, 2);
+      } catch (err) {
+        output.textContent = "Error: " + err.message;
+      }
+    }
+  </script>
+</body>
+</html>
