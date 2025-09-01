@@ -15,11 +15,13 @@
 </head>
 <body>
   <h1>AI4SAT Tutor API Test</h1>
+  <!--
   <div class="row">
     <label>API Base URL:</label><br>
     <input id="api" size="60" value="https://ai4sat-tutor-api-jkle.vercel.app">
     <div style="font-size:.9rem;color:#555">Replace with your actual Vercel URL or custom domain (e.g., https://api.ai4academics.org)</div>
   </div>
+  -->
 
   <div class="row">
     <label>Question:</label><br>
@@ -28,7 +30,7 @@
 
   <div class="row">
     <label>Answer:</label><br>
-    <input id="answer" value="32615" size="20">
+    <input id="answer" value="" size="20">
   </div>
 
   <button onclick="send()">Check Answer</button>
@@ -75,11 +77,13 @@
           feedback.textContent = 'API Error: ' + (body.error || 'Unknown error');
         }
 
+        /*
         output.textContent =
           "Status: " + resp.status + " " + resp.statusText + "\n" +
           "URL: " + resp.url + "\n" +
           "Headers: " + JSON.stringify(Object.fromEntries(resp.headers.entries()), null, 2) + "\n\n" +
           "Body:\n" + (typeof body === "string" ? body : JSON.stringify(body, null, 2));
+        */
       } catch (err) {
         feedback.className = 'error';
         feedback.textContent = "Connection Error: " + err.message;
