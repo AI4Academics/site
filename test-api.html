@@ -36,7 +36,7 @@
   <button onclick="send()">Check Answer</button>
 
   <h3>Response:</h3>
-  <div id="output">(results will appear here)</div>
+  <!-- <div id="output">(results will appear here)</div> -->
   <div id="feedback"></div>
 
   <script>
@@ -75,9 +75,15 @@
           feedback.className = body.correct ? 'success' : 'error';
           feedback.innerHTML = `
             <strong>${body.correct ? '✅ Correct!' : '❌ Incorrect'}</strong><br>
+            ${body.feedback}
+          `;
+          /*
+          feedback.innerHTML = `
+            <strong>${body.correct ? '✅ Correct!' : '❌ Incorrect'}</strong><br>
             ${body.feedback}<br>
             ${body.nextQuestion ? `<strong>Next Question:</strong> ${body.nextQuestion.question}` : ''}
           `;
+          */
           
           // Auto-populate next question if available
           if (body.nextQuestion) {
