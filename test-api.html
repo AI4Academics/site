@@ -44,16 +44,16 @@
       const api = document.getElementById('api').value.replace(/\/$/, '');
       const question = document.getElementById('question').value;
       const answer = document.getElementById('answer').value;
-      const output = document.getElementById('output');
+      //const output = document.getElementById('output');
       const feedback = document.getElementById('feedback');
 
-      console.log('[v0] Starting API call...');
-      console.log('[v0] API URL:', api + "/api/check-answer");
-      console.log('[v0] Request data:', { question, answer });
+      //console.log('[v0] Starting API call...');
+      //console.log('[v0] API URL:', api + "/api/check-answer");
+      //console.log('[v0] Request data:', { question, answer });
       
       // Clear previous results
       feedback.innerHTML = '';
-      output.textContent = 'Making request...';
+      //output.textContent = 'Making request...';
 
       try {
         const resp = await fetch(api + "/api/check-answer", {
@@ -62,11 +62,11 @@
           body: JSON.stringify({ question, answer })
         });
 
-        console.log('[v0] Response received:', resp.status, resp.statusText);
-        console.log('[v0] Response headers:', Object.fromEntries(resp.headers.entries()));
+        //console.log('[v0] Response received:', resp.status, resp.statusText);
+        //console.log('[v0] Response headers:', Object.fromEntries(resp.headers.entries()));
 
         const text = await resp.text();
-        console.log('[v0] Response text:', text);
+        //console.log('[v0] Response text:', text);
         
         let body;
         try { body = JSON.parse(text); } catch { body = text; }
@@ -89,18 +89,19 @@
           feedback.className = 'error';
           feedback.textContent = 'API Error: ' + (body.error || 'Unknown error');
         }
-
+        /*
         output.textContent =
           "Status: " + resp.status + " " + resp.statusText + "\n" +
           "URL: " + resp.url + "\n" +
           "Headers: " + JSON.stringify(Object.fromEntries(resp.headers.entries()), null, 2) + "\n\n" +
           "Body:\n" + (typeof body === "string" ? body : JSON.stringify(body, null, 2));
+        */
       } catch (err) {
-        console.log('[v0] Fetch error:', err);
+        //console.log('[v0] Fetch error:', err);
         feedback.className = 'error';
         feedback.textContent = "Connection Error: " + err.message;
-        output.textContent = "Fetch error: " + err.message +
-          "\n(Hint: If this is a CORS preflight issue, ensure the API sends Access-Control-Allow-* headers and that ALLOWED_ORIGIN matches this page's origin.)";
+        //output.textContent = "Fetch error: " + err.message +
+        //  "\n(Hint: If this is a CORS preflight issue, ensure the API sends Access-Control-Allow-* headers and that ALLOWED_ORIGIN matches this page's origin.)";
       }
     }
 
